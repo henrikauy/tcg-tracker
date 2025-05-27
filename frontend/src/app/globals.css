@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-color: #f8fafc;           /* Light gray (Slate 50) */
+  --card-bg: #f0f0f0;            /* White */
+  --text-color: #1e293b;         /* Slate 800 */
+  --muted-color: #64748b;        /* Slate 500 */
+  --theme-accent: #2563eb;       /* Blue 600 */
+  --theme-accent-dark: #1d4ed8;  /* Blue 700 */
+  --badge-released-bg: #22c55e;  /* Green 500 */
+  --badge-released-text: #f0fdf4;/* Green 50 */
+  --badge-preorder-bg: #fbbf24;  /* Amber 400 */
+  --badge-preorder-text: #1e293b;/* Slate 800 */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .bg-theme {
+    background-color: var(--bg-color) ;
+  }
+  .bg-card-bg {
+    background-color: var(--card-bg) ;
+  }
+  .text-theme {
+    color: var(--text-color) ;
+  }
+  .text-muted {
+    color: var(--muted-color) ;
+  }
+  .badge-released {
+    background-color: var(--badge-released-bg) ;
+    color: var(--badge-released-text) ;
+  }
+  .badge-preorder {
+    background-color: var(--badge-preorder-bg) ;
+    color: var(--badge-preorder-text) ;
+  }
+  .border-theme-accent {
+    border-color: var(--theme-accent) ;
+  }
+  .bg-theme-accent {
+    background-color: var(--theme-accent) ;
+  }
+  .hover\:bg-theme-accent-dark:hover {
+    background-color: var(--theme-accent-dark) ;
+  }
+  .text-theme-accent {
+    color: var(--theme-accent) ;
+  }
 }
