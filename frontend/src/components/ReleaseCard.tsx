@@ -8,8 +8,16 @@ export type Release = {
   status: string;
 };
 
+type ReleaseCardProps = {
+  release: Release;
+  onDelete: (id: number) => void;
+}
+
 // ReleaseCard component displays a single release card with delete functionality
-export function ReleaseCard({ release, onDelete }: { release: Release; onDelete: (id: number) => void }) {
+export function ReleaseCard({
+   release,
+   onDelete
+}: ReleaseCardProps) {
   // Determine badge style based on release status
   const badgeClass = release.status === 'released' ? 'badge-released' : 'badge-preorder';
 
@@ -30,7 +38,7 @@ export function ReleaseCard({ release, onDelete }: { release: Release; onDelete:
       {/* Release link (truncated if too long) */}
       <p className="text-sm text-muted">
         Link: <a href={release.link} className="text-theme hover:underline">
-          {release.link.length > 40 ? release.link.slice(0, 37) + '...' : release.link}
+          {release.link.length > 40 ? release.link.slice(0, 35) + '...' : release.link}
         </a>
       </p>
 
