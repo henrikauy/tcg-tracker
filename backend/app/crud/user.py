@@ -1,9 +1,7 @@
 from passlib.context import CryptContext
 from sqlmodel import Session, select
-from datetime import datetime
-from database.models import User, Release, Subscription
+from database.models import User
 from database.config import engine
-
 
 
 # bcrypt context for hashing passwords
@@ -66,3 +64,4 @@ def authenticate_user(email: str, password: str) -> User | None:
     if not verify_password(password, user.password_hash):
         return None
     return user
+

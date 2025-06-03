@@ -2,7 +2,7 @@ import pytest
 from sqlmodel import Session
 from database.models import User
 from database.config import engine
-from backend.app.crud import create_user, get_user_by_email, authenticate_user, pwd_context
+from backend.app.crud.user import create_user, get_user_by_email, authenticate_user, pwd_context
 
 TEST_EMAIL = "pytest_user@example.com"
 TEST_MOBILE = "+10000000000"
