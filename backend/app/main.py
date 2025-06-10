@@ -1,12 +1,24 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from backend.app.crud.user import create_user, authenticate_user, get_user_by_email
+from backend.app.crud.user import create_user, authenticate_user, get_user_by_email, create_access_token
 from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases
 from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription
 from database.models import User, Release, Subscription
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend URL(s) for better security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # CRUD operations for user management
 class SignupRequest(BaseModel):
@@ -31,7 +43,14 @@ def login(request: LoginRequest):
     user = authenticate_user(request.email, request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    return {"message": "Login successful", "user_id": user.id, "email": user.email}
+    # Create JWT token
+    access_token = create_access_token({"sub": str(user.id), "email": user.email})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": user.id,
+        "email": user.email
+    }
 
 # CRUD operations for release management
 class ReleaseUpdate(BaseModel):
@@ -94,32 +113,32 @@ def create_and_update_release(info: ReleaseUpdate):
 
 #--------------------------- Subscription Management Endpoints -----------------------------------
 @app.get("/me/subscriptions", response_model=list[ReleaseRead])
-def get_my_subscriptions(current_user: User = Depends(get_current_user)):
+def get_my_subscriptions(user_id: int):
     """
     /GET /me/subscriptions
-    Retrieve all subscriptions for the authenticated user.
+    Retrieve all subscriptions for the given user (no auth).
     """
-    return get_user_subscriptions(current_user.id)
+    return get_user_subscriptions(user_id)
 
 @app.post("/me/subscriptions")
-def add_subscription(release_id: int, current_user: User = Depends(get_current_user)):
+def add_subscription(user_id: int, release_id: int):
     """
     /POST /me/subscriptions
-    Subscribe the authenticated user to a release.
+    Subscribe the user to a release (no auth).
     """
     release = get_release_by_id(release_id)
     if not release:
         raise HTTPException(status_code=404, detail="Release not found")
-    subscription = create_subscription(current_user.id, release_id)
+    subscription = create_subscription(user_id, release_id)
     return subscription
 
 @app.delete("/me/subscriptions/{release_id}", status_code=204)
-def remove_subscription(release_id: int, current_user: User = Depends(get_current_user)):
+def remove_subscription(user_id: int, release_id: int):
     """
     /DELETE /me/subscriptions/{release_id}
-    Remove a subscription for the authenticated user.
+    Remove a subscription for the user (no auth).
     """
-    deleted = delete_subscription(current_user.id, release_id)
+    deleted = delete_subscription(user_id, release_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Subscription not found")
     return {"message": "Subscription deleted successfully"}

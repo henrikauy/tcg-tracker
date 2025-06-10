@@ -2,7 +2,21 @@ from passlib.context import CryptContext
 from sqlmodel import Session, select
 from database.models import User
 from database.config import engine
+import jwt
+from datetime import datetime, timedelta
+import os
+import dotenv
 
+
+dotenv.load_dotenv()
+SECRET_KEY = os.environ["JWT_KEY"]
+ALGORITHM = "HS256"
+
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1)):
+    to_encode = data.copy()
+    expire = datetime.now() + expires_delta
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # bcrypt context for hashing passwords
 pwd_context= CryptContext(schemes=["bcrypt"], deprecated="auto")
