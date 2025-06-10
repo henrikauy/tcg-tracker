@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from backend.app.crud.user import create_user, authenticate_user, get_user_by_email
 from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases
+from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription
+from database.models import User, Release, Subscription
 from datetime import datetime
 
 app = FastAPI()
@@ -88,7 +90,37 @@ def create_and_update_release(info: ReleaseUpdate):
     release = upsert_release(info_dict)
     return release
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+
+
+#--------------------------- Subscription Management Endpoints -----------------------------------
+@app.get("/me/subscriptions", response_model=list[ReleaseRead])
+def get_my_subscriptions(current_user: User = Depends(get_current_user)):
+    """
+    /GET /me/subscriptions
+    Retrieve all subscriptions for the authenticated user.
+    """
+    return get_user_subscriptions(current_user.id)
+
+@app.post("/me/subscriptions")
+def add_subscription(release_id: int, current_user: User = Depends(get_current_user)):
+    """
+    /POST /me/subscriptions
+    Subscribe the authenticated user to a release.
+    """
+    release = get_release_by_id(release_id)
+    if not release:
+        raise HTTPException(status_code=404, detail="Release not found")
+    subscription = create_subscription(current_user.id, release_id)
+    return subscription
+
+@app.delete("/me/subscriptions/{release_id}", status_code=204)
+def remove_subscription(release_id: int, current_user: User = Depends(get_current_user)):
+    """
+    /DELETE /me/subscriptions/{release_id}
+    Remove a subscription for the authenticated user.
+    """
+    deleted = delete_subscription(current_user.id, release_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    return {"message": "Subscription deleted successfully"}
 
