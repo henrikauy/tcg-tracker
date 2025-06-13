@@ -2,18 +2,21 @@
 import React, { useEffect, useState } from 'react';
 import { ReleaseCard, Release } from '@/components/ReleaseCard';
 import { InputCard, NewRelease } from '@/components/InputCard';
-
-
-// Mock data
-const initialReleases: Release[] = [
-  { id: 1, name: 'Scarlet & Violet', link: 'https://www.bigw.com.au/product/pokemon-tcg-scarlet-violet-destined-rivals-booster-display/p/6023781', status: 'Pre-Order' },
-];
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const { data: session } = useSession();
   const [releases, setReleases] = useState<Release[]>([]);
 
+  // Fetch only the current user's subscriptions
   useEffect(() => {
-    fetch(process.env.NEXT_PUBLIC_FASTAPI_URL + '/releases')
+    if (!session?.accessToken) return;
+
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    })
       .then(response => response.json())
       .then(data => {
         const mappedReleases = data.map((release: any) => ({
@@ -25,11 +28,15 @@ export default function Home() {
         setReleases(mappedReleases);
       })
       .catch(() => setReleases([]));
-  }, []);
+  }, [session]);
 
   const handleDelete = (id: number) => {
+    if (!session?.accessToken) return;
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases/${id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
     })
       .then(() => {
         setReleases(prev => prev.filter(r => r.id !== id));
@@ -38,6 +45,10 @@ export default function Home() {
         alert("Failed to delete release." + err.message);
       });
   };
+
+  if (!session?.accessToken) {
+    return <div className="text-center mt-12">Loading...</div>;
+  }
 
   return (
     <main className="min-h-screen bg-theme p-8">
@@ -52,14 +63,15 @@ export default function Home() {
           <p className="text-theme text-center col-span-full">No releases to display.</p>
         )}
       </section>
-
       <section className="max-w-4xl mx-auto mt-12">
-        <InputCard onAdd={(newRelease: NewRelease) => {
-          setReleases(prev => [
-            ...prev,
-            { ...newRelease, id: Date.now() }
-          ]);
-        }}
+        <InputCard
+          accessToken={session.accessToken}
+          onAdd={(newRelease: NewRelease) => {
+            setReleases(prev => [
+              ...prev,
+              { ...newRelease, id: Date.now() }
+            ]);
+          }}
         />
       </section>
     </main>

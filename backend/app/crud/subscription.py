@@ -9,7 +9,11 @@ def get_user_subscriptions(user_id: int) -> List[Subscription]:
     Retrieve all subscriptions for a given user.
     """
     with Session(engine) as session:
-        statement = select(Subscription).where(Subscription.user_id == user_id)
+        statement = (
+            select(Release)
+            .join(Subscription, Subscription.release_id == Release.id)
+            .where(Subscription.user_id == user_id)
+        )
         return session.exec(statement).all()
     
 def create_subscription(user_id: int, release_id: int) -> Subscription:
@@ -39,18 +43,23 @@ def create_subscription(user_id: int, release_id: int) -> Subscription:
         session.refresh(subscription)
         return subscription
 
-def delete_subscription(subscription_id: int) -> None:
+def delete_subscription(user_id: int, release_id: int) -> bool:
     """
-    Delete a subscription by its ID.
+    Delete a subscription by user_id and release_id.
+    Returns True if deleted, False if not found.
     """
     with Session(engine) as session:
-        subscription = session.exec(select(Subscription).where(Subscription.id == subscription_id)).first()
-
+        subscription = session.exec(
+            select(Subscription).where(
+                Subscription.user_id == user_id,
+                Subscription.release_id == release_id
+            )
+        ).first()
         if not subscription:
-            raise ValueError("Subscription not found")
-        
+            return False
         session.delete(subscription)
         session.commit()
+        return True
 
 def get_subscribers_for_release(release_id: int) -> List[User]:
     """

@@ -7,6 +7,8 @@ from backend.app.crud.user import get_user_by_email
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from database.models import User
+from sqlmodel import Session, select
+from database.config import engine
 
 dotenv.load_dotenv()
 SECRET_KEY = os.environ["JWT_KEY"]
@@ -51,17 +53,20 @@ def authenticate_user(email: str, password: str) -> User | None:
         return None
     return user
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """
     Get the current authenticated user from the JWT token.
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
-        email = payload.get("email")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        return {"user_id": user_id, "email": email}
+        # Fetch the user from the database
+        with Session(engine) as session:
+            user = session.exec(select(User).where(User.id == user_id)).first()
+            if user is None:
+                raise HTTPException(status_code=401, detail="User not found")
+            return user
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    

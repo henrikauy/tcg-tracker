@@ -12,10 +12,11 @@ export interface NewRelease {
 // Props interface for the InputCard component
 interface InputCardProps {
   onAdd: (release: NewRelease) => void;
+  accessToken: string;
 }
 
 // InputCard component allows users to add a new release
-export const InputCard: React.FC<InputCardProps> = ({ onAdd }) => {
+export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
   // State for the input fields
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
@@ -23,7 +24,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd }) => {
   // Handles form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !link) return; // Prevent submission if fields are empty
+    if (!name || !link || !accessToken) return; // Prevent submission if fields are empty
 
     const payload = {
       name,
@@ -37,6 +38,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(payload),
       });
@@ -102,6 +104,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd }) => {
       <button
         type="submit"
         className="btn bg-theme-accent text-theme font-bold rounded-lg py-2 mt-4 hover:bg-theme-accent-dark transition"
+        disabled={!accessToken}
       >
         Add Release
       </button>

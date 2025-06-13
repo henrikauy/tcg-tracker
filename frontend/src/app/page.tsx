@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from "next-auth/react";
 import LoginForm from '@/components/LoginForm';
 import LogoutButton from '@/components/LogoutButton';
+import SignupForm from '@/components/SignupForm';
 
 
 export default function Home() {
@@ -20,7 +21,10 @@ export default function Home() {
         <LogoutButton />
         </div>
       ) : (
-        <LoginForm />
+        <div>
+          <LoginForm />
+          <SignupForm />
+        </div>
       )}
     </main>
   );

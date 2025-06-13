@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from backend.app.crud.user import create_user, get_user_by_email
 from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases, delete_release_by_id
-from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription
+from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription, get_subscribers_for_release
 from backend.app.auth.auth import authenticate_user, get_current_user, create_access_token
 from database.models import User, Release, Subscription
 from datetime import datetime
@@ -100,56 +100,67 @@ def read_all_releases():
     return releases
 
 @app.post("/releases", response_model=ReleaseRead)
-def create_and_update_release(info: ReleaseUpdate):
+def create_and_subscribe_release(info: ReleaseUpdate, current_user: User = Depends(get_current_user)):
     """
     /POST /releases
-    Create or update a release based on the provided information.
+    Create or update a release and subscribe the user to it.
     """
-    info_dict = info.model_dump()
-    info_dict["last_checked"] = datetime.now()
-    release = upsert_release(info_dict)
+    release = get_release_by_url(info.url)
+    if release:
+        # If it exists, update it
+        info_dict = info.model_dump()
+        info_dict["last_checked"] = datetime.now()
+        release = upsert_release(info_dict)
+    create_subscription(current_user.id, release.id)
     return release
 
 @app.delete("/releases/{release_id}", status_code=204)
-def delete_release(release_id: int):
+def unsubscribe_and_maybe_delete_release(release_id: int, current_user: User = Depends(get_current_user)):
     """
     /DELETE /releases/{release_id}
-    Delete a release by its ID.
+    Remove the user's subscription to the release.
+    If no one is subscribed after, delete the release.
     """
-    deleted = delete_release_by_id(release_id)
+    # Remove the user's subscription
+    deleted = delete_subscription(current_user.id, release_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Release not found")
+        raise HTTPException(status_code=404, detail="Subscription not found")
+    # Check if anyone else is subscribed
+    subscribers = get_subscribers_for_release(release_id)
+    if not subscribers:
+        # No one is subscribed, delete the release
+        delete_release_by_id(release_id)
     return
 
 
 #--------------------------- Subscription Management Endpoints -----------------------------------
 @app.get("/me/subscriptions", response_model=list[ReleaseRead])
-def get_my_subscriptions(user_id: int):
+def get_my_subscriptions(current_user: User = Depends(get_current_user)):
     """
     /GET /me/subscriptions
-    Retrieve all subscriptions for the given user (no auth).
+    Retrieve all subscriptions for the current user.
     """
-    return get_user_subscriptions(user_id)
+    return get_user_subscriptions(current_user.id)
 
 @app.post("/me/subscriptions")
-def add_subscription(user_id: int, release_id: int):
+def add_subscription(release_id: int, current_user: User = Depends(get_current_user)):
     """
     /POST /me/subscriptions
-    Subscribe the user to a release (no auth).
+    Subscribe the current user to a release by its ID.
     """
     release = get_release_by_id(release_id)
     if not release:
         raise HTTPException(status_code=404, detail="Release not found")
-    subscription = create_subscription(user_id, release_id)
+    subscription = create_subscription(current_user.id, release_id)
     return subscription
 
 @app.delete("/me/subscriptions/{release_id}", status_code=204)
-def remove_subscription(user_id: int, release_id: int):
+def remove_subscription(release_id: int, current_user: User = Depends(get_current_user)):
     """
     /DELETE /me/subscriptions/{release_id}
-    Remove a subscription for the user (no auth).
+    Remove the current user's subscription to a release by its ID.
     """
-    deleted = delete_subscription(user_id, release_id)
+    deleted = delete_subscription(current_user.id, release_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Subscription not found")
     return {"message": "Subscription deleted successfully"}
