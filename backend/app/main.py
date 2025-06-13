@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from backend.app.crud.user import create_user, authenticate_user, get_user_by_email, create_access_token
+from backend.app.crud.user import create_user, get_user_by_email
 from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases
 from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription
+from backend.app.auth.auth import authenticate_user, get_current_user, create_access_token
 from database.models import User, Release, Subscription
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
