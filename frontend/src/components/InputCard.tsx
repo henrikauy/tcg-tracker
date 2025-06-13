@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const apiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000";
+
 // TypeScript interface describing the shape of a new release object
 export interface NewRelease {
   name: string;
@@ -19,12 +21,46 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd }) => {
   const [link, setLink] = useState('');
 
   // Handles form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !link) return; // Prevent submission if fields are empty
-    onAdd({ name, link, status: 'Coming Soon' }); // Pass new release to parent
+
+    const payload = {
+      name,
+      url: link,
+      source: "user",
+      status: 'Coming Soon',
+    };
+
+    try {
+      const response = await fetch(`${apiUrl}/releases`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("Error adding release: " + errorData.detail);
+        return;
+      }
+
+      const data = await response.json();
+
+      // Call the onAdd callback with the new release data
+      onAdd({
+        name: data.name,
+        link: data.url,
+        status: data.status,
+      });
     setName(''); // Reset form fields
     setLink('');
+    }
+    catch (error) {
+      alert("Failed to add release.");
+    }
   };
 
   // Render the input form

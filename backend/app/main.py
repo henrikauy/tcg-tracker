@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from backend.app.crud.user import create_user, get_user_by_email
-from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases
+from backend.app.crud.release import get_release_by_url, get_release_by_id, upsert_release, get_all_releases, delete_release_by_id
 from backend.app.crud.subscription import get_user_subscriptions, create_subscription, delete_subscription
 from backend.app.auth.auth import authenticate_user, get_current_user, create_access_token
 from database.models import User, Release, Subscription
@@ -110,6 +110,16 @@ def create_and_update_release(info: ReleaseUpdate):
     release = upsert_release(info_dict)
     return release
 
+@app.delete("/releases/{release_id}", status_code=204)
+def delete_release(release_id: int):
+    """
+    /DELETE /releases/{release_id}
+    Delete a release by its ID.
+    """
+    deleted = delete_release_by_id(release_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Release not found")
+    return
 
 
 #--------------------------- Subscription Management Endpoints -----------------------------------

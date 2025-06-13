@@ -1,12 +1,13 @@
 from sqlmodel import Session, select
 from database.models import User
 from database.config import engine
-from backend.app.auth.auth import hash_password
+
 
 def create_user(email: str, mobile: str, password: str):
     """
     Create a new user in the database.
     """
+    from backend.app.auth.auth import hash_password
     hashed_password = hash_password(password) # Hash the password before storing it
 
     # Check if the user already exists

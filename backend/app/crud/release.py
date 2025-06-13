@@ -65,3 +65,17 @@ def get_release_by_id(id: int) -> Release | None:
         statement = select(Release).where(Release.id == id)
         result = session.exec(statement).first()
         return result
+    
+def delete_release_by_id(id: int) -> None:
+    """
+    Delete a release by its ID.
+    Raises an error if the release does not exist.
+    """
+    with Session(engine) as session:
+        statement = select(Release).where(Release.id == id)
+        release = session.exec(statement).first()
+        if not release:
+            raise ValueError("Release not found")
+        
+        session.delete(release)
+        session.commit()

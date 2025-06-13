@@ -23,8 +23,8 @@ class Release(SQLModel, table=True):
 
 class Subscription(SQLModel, table=True):
   id: Optional[int] = Field(default=None, primary_key=True)
-  user_id: int = Field(foreign_key="user.id")
-  release_id: int = Field(foreign_key="release.id")
+  user_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
+  release_id: int = Field(foreign_key="release.id", ondelete="CASCADE")
   created_at: datetime = Field(default_factory=datetime.now)
   last_notification: Optional[date] = None
 

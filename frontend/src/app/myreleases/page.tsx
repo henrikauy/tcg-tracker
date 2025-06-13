@@ -10,10 +10,33 @@ const initialReleases: Release[] = [
 ];
 
 export default function Home() {
-  const [releases, setReleases] = useState<Release[]>(initialReleases);
+  const [releases, setReleases] = useState<Release[]>([]);
+
+  useEffect(() => {
+    fetch(process.env.NEXT_PUBLIC_FASTAPI_URL + '/releases')
+      .then(response => response.json())
+      .then(data => {
+        const mappedReleases = data.map((release: any) => ({
+          id: release.id,
+          name: release.name,
+          link: release.url,
+          status: release.status,
+        }));
+        setReleases(mappedReleases);
+      })
+      .catch(() => setReleases([]));
+  }, []);
 
   const handleDelete = (id: number) => {
-    setReleases(prev => prev.filter(r => r.id !== id));
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setReleases(prev => prev.filter(r => r.id !== id));
+      })
+      .catch((err) => {
+        alert("Failed to delete release." + err.message);
+      });
   };
 
   return (
