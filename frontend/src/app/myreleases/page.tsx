@@ -4,8 +4,9 @@ import { ReleaseCard, Release } from '@/components/ReleaseCard';
 import { InputCard, NewRelease } from '@/components/InputCard';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
+import { useDeleteRelease } from "@/hooks/useDeleteRelease";
 
-export default function Home() {
+export default function MyReleasesPage() {
   // Get the current session (user authentication info)
   const { data: session } = useSession();
   // State to hold the list of releases the user is subscribed to
@@ -43,22 +44,7 @@ export default function Home() {
   }, [session]);
 
   // Handle deleting a release subscription for the current user
-  const handleDelete = (id: number) => {
-    if (!session?.accessToken) return;
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    })
-      .then(() => {
-        // Remove the deleted release from the local state
-        setReleases(prev => prev.filter(r => r.id !== id));
-      })
-      .catch((err) => {
-        alert("Failed to delete release." + err.message);
-      });
-  };
+  const handleDelete = useDeleteRelease(session?.accessToken, setReleases);
 
   // Show error message if session is not available or access token is missing
   if (!session?.accessToken) {
@@ -69,9 +55,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-theme p-8">
       <header className="max-w-4xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl font-bold text-theme">Pokemon TCG Releases</h1>
+        <h1 className="text-3xl font-bold text-theme">Tracked Releases</h1>
       </header>
-      <section className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="max-w-4xl mx-auto border">
         {/* Render a card for each subscribed release */}
         {releases.map(release => (
           <ReleaseCard key={release.id} release={release} onDelete={handleDelete} />

@@ -20,7 +20,7 @@ export function ReleaseCard({ release, onDelete }: ReleaseCardProps) {
     release.status === "released" ? "badge-released" : "badge-preorder";
 
   return (
-    <div className="relative bg-card-bg shadow-md rounded-2xl p-4 flex flex-col space-y-2 hover:shadow-lg transition-shadow">
+    <div className="relative bg-card-bg border border-black p-2 flex flex-col transition-shadow hover:bg-theme-accent-dark mb-0.1">
       {/* Delete button (top-right corner) */}
       <button
         onClick={() => onDelete(release.id)}
@@ -45,7 +45,7 @@ export function ReleaseCard({ release, onDelete }: ReleaseCardProps) {
 
       {/* Status badge */}
       <span
-        className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
+        className={`max-w-fit inline-block px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
       >
         {release.status}
       </span>

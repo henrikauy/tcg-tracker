@@ -105,12 +105,9 @@ def create_and_subscribe_release(info: ReleaseUpdate, current_user: User = Depen
     /POST /releases
     Create or update a release and subscribe the user to it.
     """
-    release = get_release_by_url(info.url)
-    if release:
-        # If it exists, update it
-        info_dict = info.model_dump()
-        info_dict["last_checked"] = datetime.now()
-        release = upsert_release(info_dict)
+    info_dict = info.model_dump()
+    info_dict["last_checked"] = datetime.now()
+    release = upsert_release(info_dict)
     create_subscription(current_user.id, release.id)
     return release
 

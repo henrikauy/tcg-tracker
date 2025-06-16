@@ -20,7 +20,7 @@ export default function LoginForm() {
     });
 
     if (res?.ok) {
-      router.push("/");
+      router.push("/myreleases");
     } else {
       setError("Invalid email or password");
     }

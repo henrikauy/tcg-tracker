@@ -11,12 +11,11 @@ export default function Header() {
     <header className="w-full flex items-center justify-between px-6 py-4 bg-auto text-theme shadow-md border-b border-[black] bg-[#4484ce]">
       {/* Left: Title and navigation */}
       <div className="flex items-center gap-8">
-        <Link
-          href="/"
-          className="text-2xl font-bold tracking-tight hover:underline"
+        <h1
+          className="text-2xl font-bold tracking-tight"
         >
           PokeCard Tracker
-        </Link>
+        </h1>
         <nav className="flex gap-4">
           <Link href="/allreleases" className="hover:underline font-medium">
             All Releases
@@ -30,7 +29,7 @@ export default function Header() {
       <div>
         {session ? (
           <button
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/login' })}
             className="bg-white text-theme-accent font-semibold px-4 py-2 rounded hover:bg-gray-100 transition"
           >
             Log out
