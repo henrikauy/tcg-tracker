@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const apiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000";
 
@@ -18,8 +18,8 @@ interface InputCardProps {
 // InputCard component allows users to add a new release
 export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
   // State for the input fields
-  const [name, setName] = useState('');
-  const [link, setLink] = useState('');
+  const [name, setName] = useState("");
+  const [link, setLink] = useState("");
 
   // Handles form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,14 +30,14 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
       name,
       url: link,
       source: "user",
-      status: 'Coming Soon',
+      status: "Coming Soon",
     };
 
     try {
       const response = await fetch(`${apiUrl}/releases`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(payload),
@@ -57,10 +57,9 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         link: data.url,
         status: data.status,
       });
-    setName(''); // Reset form fields
-    setLink('');
-    }
-    catch (error) {
+      setName(""); // Reset form fields
+      setLink("");
+    } catch (error) {
       alert("Failed to add release.");
     }
   };
@@ -81,7 +80,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         type="text"
         placeholder="Set Name"
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={(e) => setName(e.target.value)}
         className="input border border-theme-accent rounded-lg px-4 py-2 text-theme focus:ring-2 focus:ring-theme-accent transition"
         required
       />
@@ -95,7 +94,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         type="url"
         placeholder="https://example.com"
         value={link}
-        onChange={e => setLink(e.target.value)}
+        onChange={(e) => setLink(e.target.value)}
         className="input border border-theme-accent rounded-lg px-4 py-2 text-theme focus:ring-2 focus:ring-theme-accent transition"
         required
       />

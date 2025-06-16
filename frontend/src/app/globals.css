@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
+/* Dark theme variables */
 :root {
-  --bg-color: #f8fafc;           /* Light gray (Slate 50) */
-  --card-bg: #f0f0f0;            /* White */
-  --text-color: #1e293b;         /* Slate 800 */
-  --muted-color: #64748b;        /* Slate 500 */
-  --theme-accent: #2563eb;       /* Blue 600 */
-  --theme-accent-dark: #1d4ed8;  /* Blue 700 */
-  --badge-released-bg: #22c55e;  /* Green 500 */
-  --badge-released-text: #f0fdf4;/* Green 50 */
-  --badge-preorder-bg: #fbbf24;  /* Amber 400 */
-  --badge-preorder-text: #1e293b;/* Slate 800 */
+  --bg-color: #D9D9D9;                
+  --text-color: #000000;           
+  --muted-color: #94a3b8;          
+  --theme-accent: #344955;         
+  --theme-accent-dark: #9c9c9c;    
+  --badge-released-bg: #22d3ee;    
+  --badge-released-text: #0f172a;  
+  --badge-preorder-bg: #f59e42;    
+  --badge-preorder-text: #18181b;  
+  --card-bg: #ffffff;
+
 }
 
 @layer base {
@@ -22,36 +24,35 @@
 
 @layer utilities {
   .bg-theme {
-    background-color: var(--bg-color) ;
+    background-color: var(--bg-color);
   }
   .bg-card-bg {
-    background-color: var(--card-bg) ;
+    background-color: var(--card-bg);
   }
   .text-theme {
-    color: var(--text-color) ;
+    color: var(--text-color);
   }
   .text-muted {
-    color: var(--muted-color) ;
+    color: var(--muted-color);
   }
   .badge-released {
-    background-color: var(--badge-released-bg) ;
-    color: var(--badge-released-text) ;
+    background-color: var(--badge-released-bg);
+    color: var(--badge-released-text);
   }
   .badge-preorder {
-    background-color: var(--badge-preorder-bg) ;
-    color: var(--badge-preorder-text) ;
+    background-color: var(--badge-preorder-bg);
+    color: var(--badge-preorder-text);
   }
   .border-theme-accent {
-    border-color: var(--theme-accent) ;
+    border-color: var(--theme-accent);
   }
   .bg-theme-accent {
-    background-color: var(--theme-accent) ;
+    background-color: var(--theme-accent);
   }
   .hover\:bg-theme-accent-dark:hover {
-    background-color: var(--theme-accent-dark) ;
+    background-color: var(--theme-accent-dark);
   }
   .text-theme-accent {
-    color: var(--theme-accent) ;
+    color: var(--theme-accent);
   }
-
 }

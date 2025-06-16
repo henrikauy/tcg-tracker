@@ -27,7 +27,10 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto p-6 bg-white rounded shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md w-full mx-auto p-6 bg-card-bg rounded shadow"
+    >
       <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
       {error && <div className="mb-4 text-red-600">{error}</div>}
       <div className="mb-4">
@@ -36,7 +39,7 @@ export default function LoginForm() {
           type="email"
           className="w-full border px-3 py-2 rounded"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
         />
@@ -47,7 +50,7 @@ export default function LoginForm() {
           type="password"
           className="w-full border px-3 py-2 rounded"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="current-password"
         />
