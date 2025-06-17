@@ -9,6 +9,20 @@ export default function AllReleasesPage() {
   const { data: session } = useSession();
   // State to hold the list of all releases
   const [releases, setReleases] = useState<Release[]>([]);
+  const [subscriptions, setSubscriptions] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!session?.accessToken) return;
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setSubscriptions(data.map((release: any) => release.id));
+      });
+  }, [session]);
 
   useEffect(() => {
     // Fetch all releases from the API when the component mounts
@@ -16,7 +30,7 @@ export default function AllReleasesPage() {
       .then((response) => response.json())
       .then((data) => {
         // Map the API response to the format used in the frontend
-        const mappedReleases = data.map((release : any) => ({
+        const mappedReleases = data.map((release: any) => ({
           id: release.id,
           name: release.name,
           link: release.url,
@@ -27,8 +41,45 @@ export default function AllReleasesPage() {
       });
   }, []);
 
-  // Handle deleting a release subscription for the current user
-  const handleDelete = useDeleteRelease(session?.accessToken, setReleases);
+  const handleDelete = (id: number) => {
+    if (!session?.accessToken) return;
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({ release_id: id }),
+    })
+      .then(() => {
+        setSubscriptions((prev) => prev.filter((rid) => rid !== id));
+      })
+      .catch((err) => {
+        alert("Failed to unsubscribe." + err.message);
+      });
+  };
+
+  const handleSubscribe = (id: number) => {
+    if (!session?.accessToken) return;
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({ release_id: id }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setSubscriptions((prev) => [...prev, id]);
+        } else {
+          alert("Failed to subscribe.");
+        }
+      })
+      .catch((err) => {
+        alert("Error subscribing: " + err.message);
+      });
+  };
 
   return (
     <main className="min-h-screen bg-theme p-8">
@@ -36,8 +87,14 @@ export default function AllReleasesPage() {
         <h1 className="text-3xl font-bold text-theme">All Releases</h1>
       </header>
       <section className="max-w-4xl mx-auto border ">
-        {releases.map((release : any) => (
-          <ReleaseCard key={release.id} release={release} onDelete={handleDelete} />
+        {releases.map((release: any) => (
+          <ReleaseCard
+            key={release.id}
+            release={release}
+            isSubscribed={subscriptions.includes(release.id)}
+            onDelete={handleDelete}
+            onSubscribe={handleSubscribe}
+          />
         ))}
       </section>
     </main>

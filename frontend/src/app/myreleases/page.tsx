@@ -1,9 +1,9 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { ReleaseCard, Release } from '@/components/ReleaseCard';
-import { InputCard, NewRelease } from '@/components/InputCard';
+"use client";
+import React, { useEffect, useState } from "react";
+import { ReleaseCard, Release } from "@/components/ReleaseCard";
+import { InputCard, NewRelease } from "@/components/InputCard";
 import { useSession } from "next-auth/react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useDeleteRelease } from "@/hooks/useDeleteRelease";
 
 export default function MyReleasesPage() {
@@ -29,8 +29,8 @@ export default function MyReleasesPage() {
         Authorization: `Bearer ${session.accessToken}`,
       },
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         // Map the API response to the Release type used in the frontend
         const mappedReleases = data.map((release: any) => ({
           id: release.id,
@@ -44,7 +44,21 @@ export default function MyReleasesPage() {
   }, [session]);
 
   // Handle deleting a release subscription for the current user
-  const handleDelete = useDeleteRelease(session?.accessToken, setReleases);
+  const handleDelete = (id: number) => {
+    if (!session?.accessToken) return;
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    })
+      .then(() => {
+        setReleases((prev) => prev.filter((r) => r.id !== id));
+      })
+      .catch((err) => {
+        alert("Failed to delete release." + err.message);
+      });
+  };
 
   // Show error message if session is not available or access token is missing
   if (!session?.accessToken) {
@@ -59,12 +73,20 @@ export default function MyReleasesPage() {
       </header>
       <section className="max-w-4xl mx-auto border">
         {/* Render a card for each subscribed release */}
-        {releases.map(release => (
-          <ReleaseCard key={release.id} release={release} onDelete={handleDelete} />
+        {releases.map((release) => (
+          <ReleaseCard
+            key={release.id}
+            release={release}
+            isSubscribed={true}
+            onDelete={handleDelete}
+            onSubscribe={() => {}}
+          />
         ))}
         {/* Show a message if there are no releases */}
         {releases.length === 0 && (
-          <p className="text-theme text-center col-span-full">No releases to display.</p>
+          <p className="text-theme text-center col-span-full">
+            No releases to display.
+          </p>
         )}
       </section>
       <section className="max-w-4xl mx-auto mt-12">
@@ -72,10 +94,7 @@ export default function MyReleasesPage() {
         <InputCard
           accessToken={session.accessToken}
           onAdd={(newRelease: NewRelease) => {
-            setReleases(prev => [
-              ...prev,
-              { ...newRelease, id: Date.now() }
-            ]);
+            setReleases((prev) => [...prev, { ...newRelease, id: Date.now() }]);
           }}
         />
       </section>

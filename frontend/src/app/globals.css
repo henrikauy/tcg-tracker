@@ -2,17 +2,17 @@
 
 /* Dark theme variables */
 :root {
-  --bg-color: #D9D9D9;                
-  --text-color: #000000;           
-  --muted-color: #94a3b8;          
-  --theme-accent: #344955;         
-  --theme-accent-dark: #9c9c9c;    
-  --badge-released-bg: #22d3ee;    
-  --badge-released-text: #0f172a;  
-  --badge-preorder-bg: #f59e42;    
-  --badge-preorder-text: #18181b;  
+  --bg-color: #d9d9d9;
+  --text-color: #000000;
+  --muted-color: #94a3b8;
+  --theme-accent: #344955;
+  --theme-accent-dark: #9c9c9c;
+  --badge-released-bg: #22d3ee;
+  --badge-released-text: #0f172a;
+  --badge-preorder-bg: #f59e42;
+  --badge-preorder-text: #18181b;
   --card-bg: #ffffff;
-
+  --card-bg-subscribed: #cde2e7;
 }
 
 @layer base {
@@ -28,6 +28,9 @@
   }
   .bg-card-bg {
     background-color: var(--card-bg);
+  }
+  .bg-card-bg-subscribed {
+    background-color: var(--card-bg-subscribed);
   }
   .text-theme {
     color: var(--text-color);
