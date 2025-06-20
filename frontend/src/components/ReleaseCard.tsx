@@ -7,6 +7,7 @@ export type Release = {
   name: string;
   link: string;
   status: string;
+  image?: string;
 };
 
 type ReleaseCardProps = {
@@ -25,7 +26,7 @@ export function ReleaseCard({
 }: ReleaseCardProps) {
   // Determine badge style based on release status
   const badgeClass =
-    release.status === "released" ? "badge-released" : "badge-preorder";
+    release.status === "In Stock" ? "badge-released" : "badge-preorder";
   const { data: session, status } = useSession();
 
   return (

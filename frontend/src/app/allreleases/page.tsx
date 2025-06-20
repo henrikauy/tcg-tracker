@@ -35,6 +35,7 @@ export default function AllReleasesPage() {
           name: release.name,
           link: release.url,
           status: release.status,
+          image: release.image || "", // Ensure image is always a string
         }));
         // Update the state with the fetched releases
         setReleases(mappedReleases);
@@ -81,13 +82,47 @@ export default function AllReleasesPage() {
       });
   };
 
+  const handleRefresh = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
+    // After refreshing, re-fetch the releases
+    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Map the API response to the format used in the frontend
+        const mappedReleases = data.map((release: any) => ({
+          id: release.id,
+          name: release.name,
+          link: release.url,
+          status: release.status,
+        }));
+        // Update the state with the fetched releases
+        setReleases(mappedReleases);
+      });
+  };
+
   return (
     <main className="min-h-screen bg-theme p-8">
       <header className="max-w-4xl mx-auto mb-8 text-center">
         <h1 className="text-3xl font-bold text-theme">All Releases</h1>
       </header>
+      <header className="max-w-4xl mx-auto mb-8 text-center">
+        <h1 className="text-3xl font-bold text-theme">All Releases</h1>
+        <button
+          onClick={handleRefresh}
+          className="mt-4 px-4 py-2 bg-theme-accent text-white rounded hover:bg-theme-accent-dark transition"
+        >
+          Refresh Releases
+        </button>
+      </header>
       <section className="max-w-4xl mx-auto border ">
-        {releases.map((release: any) => (
+        {releases
+        .slice()
+        .sort((a, b) => {
+          if (a.status === "In Stock" && b.status !== "In Stock") return -1;
+          if (b.status === "In Stock" && a.status !== "In Stock") return 1;
+          return 0;
+        })
+        .map((release: any) => (
           <ReleaseCard
             key={release.id}
             release={release}

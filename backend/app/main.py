@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Query
 from pydantic import BaseModel
 from backend.app.crud.user import create_user, get_user_by_email
 from backend.app.crud.release import (
@@ -19,36 +19,36 @@ from backend.app.auth.auth import (
     get_current_user,
     create_access_token,
 )
+from backend.app.scraper.scraper_bigw import fetch_bigw
 from backend.database.models import User, Release, Subscription
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
-
+from backend.app.schemas import (
+    SignupRequest,
+    LoginRequest,
+    ReleaseUpdate,
+    ReleaseRead,
+    SubscriptionRequest,
+    SearchItem,
+)
 
 app = FastAPI()
 
+# Enable CORS for all origins (for development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify your frontend URL(s) for better security
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# CRUD operations for user management
-class SignupRequest(BaseModel):
-    email: str
-    mobile: str
-    password: str
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
+# --------------------------- User Management Endpoints -----------------------------------
 
 
 @app.post("/signup")
 def signup(request: SignupRequest):
+    """Register a new user."""
     existing = get_user_by_email(request.email)
     if existing:
         raise HTTPException(
@@ -62,6 +62,7 @@ def signup(request: SignupRequest):
 
 @app.post("/login")
 def login(request: LoginRequest):
+    """Authenticate user and return JWT token."""
     user = authenticate_user(request.email, request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -75,28 +76,12 @@ def login(request: LoginRequest):
     }
 
 
-# CRUD operations for release management
-class ReleaseUpdate(BaseModel):
-    name: str
-    url: str
-    source: str
-    status: str
-
-
-class ReleaseRead(BaseModel):
-    id: int
-    name: str
-    url: str
-    source: str
-    status: str
+# --------------------------- Release Management Endpoints --------------------------------
 
 
 @app.get("/releases/{release_id}", response_model=ReleaseRead)
 def read_release_by_id(release_id: int):
-    """
-    /GET /releases/{release_id}
-    Retrieve a release by its ID.
-    """
+    """Retrieve a release by its ID."""
     release = get_release_by_id(release_id)
     if not release:
         raise HTTPException(status_code=404, detail="Release not found")
@@ -105,10 +90,7 @@ def read_release_by_id(release_id: int):
 
 @app.get("/releases/url/{url}", response_model=ReleaseRead)
 def read_release_by_url(url: str):
-    """
-    /GET /releases/url/{url}
-    Retrieve a release by its URL.
-    """
+    """Retrieve a release by its URL."""
     release = get_release_by_url(url)
     if not release:
         raise HTTPException(status_code=404, detail="Release not found")
@@ -117,10 +99,7 @@ def read_release_by_url(url: str):
 
 @app.get("/releases", response_model=list[ReleaseRead])
 def read_all_releases():
-    """
-    /GET /releases
-    Retrieve all releases.
-    """
+    """Retrieve all releases."""
     releases = get_all_releases()
     return releases
 
@@ -130,7 +109,6 @@ def create_and_subscribe_release(
     info: ReleaseUpdate, current_user: User = Depends(get_current_user)
 ):
     """
-    /POST /releases
     Create or update a release and subscribe the user to it.
     """
     info_dict = info.model_dump()
@@ -145,7 +123,6 @@ def unsubscribe_and_maybe_delete_release(
     release_id: int, current_user: User = Depends(get_current_user)
 ):
     """
-    /DELETE /releases/{release_id}
     Remove the user's subscription to the release.
     If no one is subscribed after, delete the release.
     """
@@ -161,17 +138,12 @@ def unsubscribe_and_maybe_delete_release(
     return
 
 
-# --------------------------- Subscription Management Endpoints -----------------------------------
-class SubscriptionRequest(BaseModel):
-    release_id: int
+# --------------------------- Subscription Management Endpoints ---------------------------
 
 
 @app.get("/me/subscriptions", response_model=list[ReleaseRead])
 def get_my_subscriptions(current_user: User = Depends(get_current_user)):
-    """
-    /GET /me/subscriptions
-    Retrieve all subscriptions for the current user.
-    """
+    """Retrieve all subscriptions for the current user."""
     return get_user_subscriptions(current_user.id)
 
 
@@ -179,10 +151,7 @@ def get_my_subscriptions(current_user: User = Depends(get_current_user)):
 def add_subscription(
     req: SubscriptionRequest, current_user: User = Depends(get_current_user)
 ):
-    """
-    /POST /me/subscriptions
-    Subscribe the current user to a release by its ID.
-    """
+    """Subscribe the current user to a release by its ID."""
     release_id = req.release_id
     release = get_release_by_id(release_id)
     if not release:
@@ -195,12 +164,42 @@ def add_subscription(
 def remove_subscription(
     req: SubscriptionRequest, current_user: User = Depends(get_current_user)
 ):
-    """
-    /DELETE /me/subscriptions/{release_id}
-    Remove the current user's subscription to a release by its ID.
-    """
+    """Remove the current user's subscription to a release by its ID."""
     release_id = req.release_id
     deleted = delete_subscription(current_user.id, release_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Subscription not found")
     return {"message": "Subscription deleted successfully"}
+
+
+# --------------------------- Product Fetching Endpoints -----------------------------------
+
+# Map source names to their fetch functions
+source_map = {
+    "bigw": fetch_bigw,
+}
+
+
+@app.get("/fetch/{source}", response_model=list[SearchItem])
+def get_products(source: str, available: bool | None = Query(None)):
+    """
+    Fetch products from a given source.
+    Optionally filter by availability.
+    """
+    fetch_function = source_map.get(source.lower())
+    if not fetch_function:
+        raise HTTPException(status_code=404, detail="Source not found")
+    all_items = fetch_function()
+
+    for item in all_items:
+        info = {
+            "name": item.name,
+            "url": item.url,
+            "source": item.source if hasattr(item, "source") else "bigw",
+            "status": "In Stock" if item.in_stock else "Out of Stock",
+            "last_checked": datetime.now(),
+            "image": item.image_url,
+        }
+        upsert_release(info)
+    return all_items
+

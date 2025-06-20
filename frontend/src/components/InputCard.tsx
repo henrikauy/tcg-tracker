@@ -31,6 +31,7 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
       url: link,
       source: "user",
       status: "Coming Soon",
+      image: "",
     };
 
     try {

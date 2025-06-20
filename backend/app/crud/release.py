@@ -28,6 +28,7 @@ def upsert_release(info: dict) -> Release:
             existing.source = info["source"] = info.get("source", existing.source)
             existing.status = info["status"] = info.get("status", existing.status)
             existing.last_checked = info["last_checked"] = info.get("last_checked", datetime.now)
+            existing.image = info["image"] = info.get("image", existing.image)
 
             session.add(existing)
             session.commit()
@@ -39,7 +40,8 @@ def upsert_release(info: dict) -> Release:
                 url=info["url"],
                 source=info["source"],
                 status=info["status"],
-                last_checked=info.get("last_checked", datetime.now())
+                last_checked=info.get("last_checked", datetime.now()),
+                image=info["image"] if "image" in info else None
             )
             session.add(release)
             session.commit()
