@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel
-from database.config import engine
-from database.models import User, Release, Subscription
+from backend.database.config import engine
+from backend.database.models import User, Release, Subscription
 
 def reset_db():
     # Drop all tables

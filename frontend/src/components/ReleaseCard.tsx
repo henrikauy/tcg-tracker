@@ -58,8 +58,8 @@ export function ReleaseCard({
       <h2 className="text-xl font-semibold text-theme">{release.name}</h2>
 
       {/* Release link*/}
-      <p className="text-sm text-muted">
-        Link:{" "}
+      <p className="text-sm text-black">
+        {" "}
         <a href={release.link} className="text-theme hover:underline">
           {release.link.length > 40
             ? release.link.slice(0, 35) + "..."

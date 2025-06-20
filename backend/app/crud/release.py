@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 from datetime import datetime
-from database.models import Release
-from database.config import engine
+from backend.database.models import Release
+from backend.database.config import engine
 
 def get_release_by_url(url: str) -> Release | None:
     """

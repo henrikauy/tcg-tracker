@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
-from database.models import Subscription, User, Release
-from database.config import engine
+from backend.database.models import Subscription, User, Release
+from backend.database.config import engine
 from typing import List, Optional
 from datetime import datetime
 

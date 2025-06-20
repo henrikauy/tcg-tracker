@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
-from database.models import User
-from database.config import engine
+from backend.database.models import User
+from backend.database.config import engine
 
 
 def create_user(email: str, mobile: str, password: str):

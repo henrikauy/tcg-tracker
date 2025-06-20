@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from backend.app.crud.user import get_user_by_email
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
-from database.models import User
+from backend.database.models import User
 from sqlmodel import Session, select
-from database.config import engine
+from backend.database.config import engine
 
 dotenv.load_dotenv()
 SECRET_KEY = os.environ["JWT_KEY"]

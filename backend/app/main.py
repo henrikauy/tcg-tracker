@@ -19,7 +19,7 @@ from backend.app.auth.auth import (
     get_current_user,
     create_access_token,
 )
-from database.models import User, Release, Subscription
+from backend.database.models import User, Release, Subscription
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 
