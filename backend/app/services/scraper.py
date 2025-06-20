@@ -1,41 +1,105 @@
 import hrequests
+from pprint import pprint
+from pydantic import BaseModel
+
+class SearchItem(BaseModel):
+    id: str
+    name: str
+    price: float
+    in_stock: bool
+    image_url: str
 
 # Start a stealth browser session
 session = hrequests.Session(browser="firefox")
 
-# Request the search results page
-resp = session.get("https://www.bigw.com.au/toys/board-games-puzzles/trading-cards/pokemon-trading-cards/c/681510201")
+# API URL for Big W's product search
+url = "https://api.bigw.com.au/search/v1/search"
 
-# Render the page to execute JS and load product tiles
-with resp.render(mock_human=True, timeout=60000) as page:
-    tiles = page.html.find_all("li.ProductGrid_ProductTileWrapper__LkYlE")
-    print(f"🔎 Found {len(tiles)} product tiles.\n")
+# Headers to mimic a browser request
+headers = {"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
 
-    available = []
-    sold_out = []
+payload = {
+    "format": "1",
+    "clientId": "web",
+    "page": 0,
+    "perPage": 48,
+    "sort": "relevance",
+    "text": "",
+    "category": "681510201",
+    "filter": {"inStock": False, "fulfilment": ["Home Delivery"]},
+    "state": "WA",
+    "zone": "PERTHONDEMAND",
+    "storeId": "0454",
+    "include": {
+        "facets": True,
+        "additionalFacets": ["categorySize"],
+        "suggestions": False,
+        "productAttributes": [
+            "attributes.collectable",
+            "attributes.deliverable",
+            "attributes.listingStatus",
+            "attributes.maxQuantity",
+            "information.name",
+            "information.brand",
+            "information.bundle",
+            "information.rating",
+            "information.categories",
+            "information.collections",
+            "information.media.badges",
+            "information.media.images",
+            "information.specifications",
+            "information.variants.code",
+            "fulfilment.dsv",
+            "fulfilment.preorder",
+            "fulfilment.delivery",
+            "fulfilment.collection",
+            "fulfilment.logisticType",
+            "fulfilment.productChannel",
+            "prices.WA",
+            "identifiers",
+            "promotions",
+        ],
+    },
+}
 
-    for tile in tiles:
-        # Get the product title
-        title_elem = tile.find("p.ProductTile_name__0VCwU")
-        title = title_elem.text.strip() if title_elem else "[No Title]"
 
-        # Look for sold out label explicitly
-        sold_out_label = tile.find('div[data-optly-product-tile-vertical-label="sold_out"]')
+response = session.post(url, json=payload, headers=headers)
 
-        # Look for "Add to Cart" button
-        add_to_cart_section = tile.find("div.ProductTile_addToCart__J95xW")
-        has_button = add_to_cart_section and add_to_cart_section.find("button")
+if response.ok:
+    items = []
+    data = response.json()
+    for item in data["organic"]["results"]:
+        try:
+            product_id = item["identifiers"]["articleId"]
+            product_name = item["information"]["name"]
+            in_stock = bool(item["stock"])
+            price = item["prices"]["WA"]["price"]["cents"]
+            image_url = "https:" + item["information"]["media"]["images"][0]["thumbnail"]["url"]
 
-        # Classify based on presence of button or sold_out label
-        if sold_out_label or not has_button:
-            sold_out.append(title)
-        else:
-            available.append(title)
+            search_item = SearchItem(
+                id=product_id,
+                name=product_name,
+                price=price / 100,  # Convert cents to dollars
+                in_stock=in_stock,
+                image_url=image_url,
+            )
+            items.append(search_item)
+            print("Data retrieved successfully:")
+            # for item in items:
+            #     pprint(item)
 
-    print("🟢 AVAILABLE ITEMS:")
-    for name in available:
-        print("  -", name)
+        except KeyError as e:
+            print(f"KeyError: {e} in item {item}")
 
-    print("\n🔴 SOLD OUT ITEMS:")
-    for name in sold_out:
-        print("  -", name)
+    print("Available products:")
+    for item in items:
+        if item.in_stock:
+            print(f"Name: {item.name}")
+    print("Unavailable products:")
+    for item in items:
+        if not item.in_stock:
+            print(f"Name: {item.name}")
+
+else:
+    print("Failed to retrieve data:")
+    pprint(response.json())
