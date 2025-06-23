@@ -69,11 +69,11 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-blue-500 rounded-2xl p-4 flex flex-col gap-1 shadow-lg max-w-md mx-auto"
+      className="bg-zinc-800 border border-zinc-700 rounded-2xl p-4 flex flex-col gap-1 shadow-lg max-w-md mx-auto"
     >
-      <h2 className="text-2xl font-bold text-black">Add New Release</h2>
+      <h2 className="text-2xl font-bold text-zinc-100">Add New Release</h2>
       {/* Name input */}
-      <label className="text-blue-500 font-semibold" htmlFor="release-name">
+      <label className="text-zinc-400 font-semibold" htmlFor="release-name">
         Set Name
       </label>
       <input
@@ -82,12 +82,12 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         placeholder="Set Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border border-blue-500 rounded-lg px-4 py-1 text-black focus:ring-2 focus:ring-blue-500 transition"
+        className="border border-zinc-700 rounded-lg px-4 py-1 text-zinc-400 focus:ring-2 focus:ring-indigo-400 transition"
         required
       />
 
       {/* Link input */}
-      <label className="text-blue-500 font-semibold" htmlFor="release-link">
+      <label className="text-zinc-400" htmlFor="release-link">
         Link
       </label>
       <input
@@ -96,14 +96,14 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         placeholder="https://example.com"
         value={link}
         onChange={(e) => setLink(e.target.value)}
-        className="border border-blue-500 rounded-lg px-4 py-1 text-black focus:ring-2 focus:ring-blue-500 transition"
+        className="border border-zinc-700 rounded-lg px-4 py-1 text-zinc-100 focus:ring-2 focus:ring-indigo-400 transition"
         required
       />
 
       {/* Submit button */}
       <button
         type="submit"
-        className="bg-blue-500 text-white font-bold rounded-lg py-2 mt-4 hover:bg-blue-600 transition"
+        className="bg-zinc-800 text-zinc-400 font-bold rounded-lg py-2 mt-4 border-1 border-zinc-700 hover:bg-indigo-400 transition"
         disabled={!accessToken}
       >
         Add Release

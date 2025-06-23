@@ -92,12 +92,12 @@ export default function AllReleasesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="min-h-screen bg-zinc-900 p-8">
       <header className="max-w-4xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">All Releases</h1>
+        <h1 className="text-3xl font-bold text-zinc-100">All Releases</h1>
         <button
           onClick={handleRefresh}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="mt-4 px-4 py-2 bg-indigo-400 text-white rounded hover:bg-indigo-500 transition"
         >
           Refresh Releases
         </button>

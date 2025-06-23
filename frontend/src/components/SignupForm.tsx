@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
@@ -33,50 +35,68 @@ export default function SignupForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-sm mx-auto p-6 bg-white rounded shadow"
+      className="max-w-sm w-full mx-auto p-8 rounded-lg shadow-lg bg-zinc-800 text-zinc-100 border border-zinc-700"
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      {success && <div className="mb-4 text-green-600">{success}</div>}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Email</label>
-        <input
-          type="email"
-          className="w-full border px-3 py-2 rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Mobile</label>
-        <input
-          type="tel"
-          className="w-full border px-3 py-2 rounded"
-          value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
-          required
-          autoComplete="tel"
-        />
-      </div>
+      <h2 className="text-3xl font-semibold mb-8 text-center text-zinc-100">
+        Sign up
+      </h2>
+      {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
+      {success && <div className="mb-4 text-green-500 text-center">{success}</div>}
+
       <div className="mb-6">
-        <label className="block mb-1 font-medium">Password</label>
-        <input
-          type="password"
-          className="w-full border px-3 py-2 rounded"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="new-password"
-        />
+        <label className="block mb-2 font-medium text-zinc-100" htmlFor="email">
+          Email
+        </label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <FaEnvelope />
+          </span>
+          <input
+            id="email"
+            type="email"
+            className="w-full pl-10 pr-3 py-2 rounded bg-transparent border border-zinc-700 text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-indigo-400"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
       </div>
+
+      <div className="mb-2">
+        <label className="block mb-2 font-medium text-zinc-100" htmlFor="password">
+          Password
+        </label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <FaLock />
+          </span>
+          <input
+            id="password"
+            type="password"
+            className="w-full pl-10 pr-3 py-2 rounded bg-transparent border border-zinc-700 text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-indigo-400"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+          />
+        </div>
+      </div>
+
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
+        className="w-full py-2 mt-6 rounded border border-indigo-400 text-zinc-100 font-semibold hover:bg-indigo-400 hover:text-zinc-900 transition bg-transparent"
       >
-        Sign Up
+        SIGN UP
       </button>
+      <div className="mt-6 text-center text-zinc-400">
+        Already have an account?{" "}
+        <Link href="/login" className="text-indigo-400 hover:underline font-semibold">
+          Sign in
+        </Link>
+      </div>
     </form>
   );
 }

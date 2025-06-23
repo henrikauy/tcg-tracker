@@ -8,17 +8,17 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header className="w-full flex items-center justify-between px-6 py-4 shadow-md border-b border-black bg-[#4484ce]">
+    <header className="w-full flex items-center justify-between px-6 py-4 shadow-md border-b border-indigo-400 bg-zinc-800">
       {/* Left: Title and navigation */}
       <div className="flex items-center gap-8">
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-2xl tracking-tight text-zinc-100">
           PokeCard Tracker
         </h1>
         <nav className="flex gap-4">
-          <Link href="/allreleases" className="hover:underline font-medium">
+          <Link href="/allreleases" className="hover:text-zinc-100 font-medium text-zinc-400">
             All Releases
           </Link>
-          <Link href="/myreleases" className="hover:underline font-medium">
+          <Link href="/myreleases" className="hover:text-zinc-100 font-medium text-zinc-400">
             My Subscriptions
           </Link>
         </nav>
@@ -28,14 +28,14 @@ export default function Header() {
         {session ? (
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="bg-white text-blue-700 font-semibold px-4 py-2 rounded hover:bg-gray-100 transition"
+            className="bg-zinc-800 text-zinc-400 font-semibold px-4 py-2 rounded hover:bg-indigo-400 transition"
           >
             Log out
           </button>
         ) : (
           <button
             onClick={() => router.push("/login")}
-            className="bg-white text-blue-700 font-semibold px-4 py-2 rounded hover:bg-gray-100 transition"
+            className="bg-zinc-800 text-zinc-400 font-semibold px-4 py-2 rounded hover:bg-indigo-400 transition"
           >
             Log in
           </button>

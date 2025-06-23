@@ -58,9 +58,9 @@ export default function MyReleasesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="min-h-screen bg-zinc-900 p-8">
       <header className="max-w-4xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">Tracked Releases</h1>
+        <h1 className="text-3xl font-bold text-zinc-100">Tracked Releases</h1>
       </header>
       <section className="max-w-4xl mx-auto border">
         {releases.map((release) => (
@@ -73,7 +73,7 @@ export default function MyReleasesPage() {
           />
         ))}
         {releases.length === 0 && (
-          <p className="text-gray-600 text-center col-span-full">
+          <p className="text-zinc-100 text-center col-span-full">
             No releases to display.
           </p>
         )}
