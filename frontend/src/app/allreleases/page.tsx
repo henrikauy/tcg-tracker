@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ReleaseCard, Release } from "@/components/ReleaseCard";
+import { ReleaseList } from "@/components/ReleaseList";
 
 export default function AllReleasesPage() {
   const { data: session } = useSession();
@@ -102,24 +102,12 @@ export default function AllReleasesPage() {
           Refresh Releases
         </button>
       </header>
-      <section className="max-w-4xl mx-auto border">
-        {releases
-          .slice()
-          .sort((a, b) => {
-            if (a.status === "In Stock" && b.status !== "In Stock") return -1;
-            if (b.status === "In Stock" && a.status !== "In Stock") return 1;
-            return 0;
-          })
-          .map((release: any) => (
-            <ReleaseCard
-              key={release.id}
-              release={release}
-              isSubscribed={subscriptions.includes(release.id)}
-              onDelete={handleDelete}
-              onSubscribe={handleSubscribe}
-            />
-          ))}
-      </section>
+      <ReleaseList
+        releases={releases}
+        subscriptions={subscriptions}
+        onDelete={handleDelete}
+        onSubscribe={handleSubscribe}
+      />
     </main>
   );
 }
