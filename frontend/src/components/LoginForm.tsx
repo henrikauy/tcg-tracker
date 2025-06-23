@@ -30,7 +30,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md w-full mx-auto p-6 bg-card-bg rounded shadow"
+      className="max-w-md w-full mx-auto p-6 bg-white rounded shadow"
     >
       <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
       {error && <div className="mb-4 text-red-600">{error}</div>}
@@ -58,11 +58,14 @@ export default function LoginForm() {
       </div>
       <button
         type="submit"
-        className="w-full bg-theme-accent text-white py-2 rounded font-semibold hover:bg-theme-accent-dark transition"
+        className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
       >
         Login
       </button>
-      <Link href="/signup" className="text-theme-accent hover:underline py-6">
+      <Link
+        href="/signup"
+        className="block text-blue-600 hover:underline mt-4 text-center"
+      >
         Sign up
       </Link>
     </form>

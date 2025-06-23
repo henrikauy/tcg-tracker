@@ -26,42 +26,44 @@ export function ReleaseCard({
 }: ReleaseCardProps) {
   // Determine badge style based on release status
   const badgeClass =
-    release.status === "In Stock" ? "badge-released" : "badge-preorder";
-  const { data: session, status } = useSession();
+    release.status === "In Stock"
+      ? "bg-green-200 text-green-800"
+      : "bg-yellow-200 text-yellow-800";
+  const { data: session } = useSession();
 
   return (
     <div
       className={
-        `relative border border-black p-2 flex flex-col transition-shadow hover:bg-theme-accent-dark mb-0.1` +
-        (isSubscribed ? " bg-card-bg-subscribed" : " bg-card-bg")
+        `relative border border-black p-4 flex flex-col rounded-lg shadow transition-shadow hover:bg-blue-100 mb-2` +
+        (isSubscribed ? " bg-blue-50" : " bg-white")
       }
     >
-      {/* Subscribe button*/}
+      {/* Subscribe/Unsubscribe button */}
       {session &&
         (isSubscribed ? (
           <button
             onClick={() => onDelete(release.id)}
-            className="absolute top-2 right-2 text-theme hover:text-red-500"
-            aria-label="Delete release"
+            className="absolute top-2 right-2 text-blue-700 hover:text-red-500 font-semibold"
+            aria-label="Unsubscribe from release"
           >
             Unsubscribe
           </button>
         ) : (
           <button
             onClick={() => onSubscribe(release.id)}
-            className="absolute top-2 right-2 text-theme hover:text-red-500"
+            className="absolute top-2 right-2 text-blue-700 hover:text-red-500 font-semibold"
             aria-label="Subscribe to release"
           >
             Subscribe
           </button>
         ))}
       {/* Release name */}
-      <h2 className="text-xl font-semibold text-theme">{release.name}</h2>
+      <h2 className="text-xl font-semibold text-gray-800">{release.name}</h2>
 
       {/* Release link*/}
-      <p className="text-sm text-black">
+      <p className="text-sm text-gray-600">
         {" "}
-        <a href={release.link} className="text-theme hover:underline">
+        <a href={release.link} className="text-blue-600 hover:underline">
           {release.link.length > 40
             ? release.link.slice(0, 35) + "..."
             : release.link}

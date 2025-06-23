@@ -2,12 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ReleaseCard, Release } from "@/components/ReleaseCard";
-import { useDeleteRelease } from "@/hooks/useDeleteRelease";
 
 export default function AllReleasesPage() {
-  // Get the current session (user authentication info)
   const { data: session } = useSession();
-  // State to hold the list of all releases
   const [releases, setReleases] = useState<Release[]>([]);
   const [subscriptions, setSubscriptions] = useState<number[]>([]);
 
@@ -25,19 +22,16 @@ export default function AllReleasesPage() {
   }, [session]);
 
   useEffect(() => {
-    // Fetch all releases from the API when the component mounts
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
       .then((response) => response.json())
       .then((data) => {
-        // Map the API response to the format used in the frontend
         const mappedReleases = data.map((release: any) => ({
           id: release.id,
           name: release.name,
           link: release.url,
           status: release.status,
-          image: release.image || "", // Ensure image is always a string
+          image: release.image || "",
         }));
-        // Update the state with the fetched releases
         setReleases(mappedReleases);
       });
   }, []);
@@ -84,53 +78,47 @@ export default function AllReleasesPage() {
 
   const handleRefresh = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
-    // After refreshing, re-fetch the releases
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
       .then((response) => response.json())
       .then((data) => {
-        // Map the API response to the format used in the frontend
         const mappedReleases = data.map((release: any) => ({
           id: release.id,
           name: release.name,
           link: release.url,
           status: release.status,
         }));
-        // Update the state with the fetched releases
         setReleases(mappedReleases);
       });
   };
 
   return (
-    <main className="min-h-screen bg-theme p-8">
+    <main className="min-h-screen bg-gray-100 p-8">
       <header className="max-w-4xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl font-bold text-theme">All Releases</h1>
-      </header>
-      <header className="max-w-4xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl font-bold text-theme">All Releases</h1>
+        <h1 className="text-3xl font-bold text-gray-800">All Releases</h1>
         <button
           onClick={handleRefresh}
-          className="mt-4 px-4 py-2 bg-theme-accent text-white rounded hover:bg-theme-accent-dark transition"
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
           Refresh Releases
         </button>
       </header>
-      <section className="max-w-4xl mx-auto border ">
+      <section className="max-w-4xl mx-auto border">
         {releases
-        .slice()
-        .sort((a, b) => {
-          if (a.status === "In Stock" && b.status !== "In Stock") return -1;
-          if (b.status === "In Stock" && a.status !== "In Stock") return 1;
-          return 0;
-        })
-        .map((release: any) => (
-          <ReleaseCard
-            key={release.id}
-            release={release}
-            isSubscribed={subscriptions.includes(release.id)}
-            onDelete={handleDelete}
-            onSubscribe={handleSubscribe}
-          />
-        ))}
+          .slice()
+          .sort((a, b) => {
+            if (a.status === "In Stock" && b.status !== "In Stock") return -1;
+            if (b.status === "In Stock" && a.status !== "In Stock") return 1;
+            return 0;
+          })
+          .map((release: any) => (
+            <ReleaseCard
+              key={release.id}
+              release={release}
+              isSubscribed={subscriptions.includes(release.id)}
+              onDelete={handleDelete}
+              onSubscribe={handleSubscribe}
+            />
+          ))}
       </section>
     </main>
   );

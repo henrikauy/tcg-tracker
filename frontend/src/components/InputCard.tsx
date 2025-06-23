@@ -69,11 +69,11 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-theme-accent rounded-2xl p-4 flex flex-col gap-1 shadow-lg max-w-md mx-auto"
+      className="bg-white border border-blue-500 rounded-2xl p-4 flex flex-col gap-1 shadow-lg max-w-md mx-auto"
     >
       <h2 className="text-2xl font-bold text-black">Add New Release</h2>
       {/* Name input */}
-      <label className="text-theme-accent font-semibold" htmlFor="release-name">
+      <label className="text-blue-500 font-semibold" htmlFor="release-name">
         Set Name
       </label>
       <input
@@ -82,12 +82,12 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         placeholder="Set Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="input border border-theme-accent rounded-lg px-4 py-1 text-theme focus:ring-2 focus:ring-theme-accent transition"
+        className="border border-blue-500 rounded-lg px-4 py-1 text-black focus:ring-2 focus:ring-blue-500 transition"
         required
       />
 
       {/* Link input */}
-      <label className="text-theme-accent font-semibold" htmlFor="release-link">
+      <label className="text-blue-500 font-semibold" htmlFor="release-link">
         Link
       </label>
       <input
@@ -96,14 +96,14 @@ export const InputCard: React.FC<InputCardProps> = ({ onAdd, accessToken }) => {
         placeholder="https://example.com"
         value={link}
         onChange={(e) => setLink(e.target.value)}
-        className="input border border-theme-accent rounded-lg px-4 py-1 text-theme focus:ring-2 focus:ring-theme-accent transition"
+        className="border border-blue-500 rounded-lg px-4 py-1 text-black focus:ring-2 focus:ring-blue-500 transition"
         required
       />
 
       {/* Submit button */}
       <button
         type="submit"
-        className="btn bg-theme-accent text-white font-bold rounded-lg py-2 mt-4 hover:bg-theme-accent-dark transition"
+        className="bg-blue-500 text-white font-bold rounded-lg py-2 mt-4 hover:bg-blue-600 transition"
         disabled={!accessToken}
       >
         Add Release

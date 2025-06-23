@@ -73,7 +73,7 @@ export default function SignupForm() {
       </div>
       <button
         type="submit"
-        className="w-full bg-theme-accent text-white py-2 rounded font-semibold hover:bg-theme-accent-dark transition"
+        className="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
       >
         Sign Up
       </button>
