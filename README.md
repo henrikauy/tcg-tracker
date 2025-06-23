@@ -5,16 +5,26 @@ A full-stack application to track TCG set releases in Australia. The system scra
 # Features
 
 User sign-up, login, and JWT-based authentication
+
 Next.js frontend with NextAuth.js integration
+
 FastAPI backend with CRUD endpoints for users, releases, and subscriptions
+
 PostgreSQL database for persistence
+
 Web scraping with hrequests to avoid blocks
 
 # Future Updates
 
 Background scheduler to periodically scrape known release URLs, detect status changes, and trigger notifications
+
 Email/SMS notifications to subscribed users when release status changes
+
 OAuth Providers
+
 Notification Dashboard to track notifications and manage preferences
+
 Mobile App
+
 Automatic TCG Purchasing
+
