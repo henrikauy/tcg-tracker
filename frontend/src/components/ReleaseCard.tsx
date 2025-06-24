@@ -1,5 +1,6 @@
 import React from "react";
 import { useSession } from "next-auth/react";
+import { RiChatFollowUpFill, RiChatFollowUpLine } from "react-icons/ri";
 
 // TypeScript type describing the shape of a release object
 export type Release = {
@@ -34,7 +35,7 @@ export function ReleaseCard({
   return (
     <div
       className={
-        `relative border border-black p-4 flex flex-col rounded-lg shadow transition-shadow hover:bg-blue-100 mb-2` +
+        `bg-zinc-800 border-zinc-900 border-1 p-1 flex flex-col shadow transition-shadow hover:bg-zinc-700` +
         (isSubscribed ? " bg-blue-50" : " bg-white")
       }
     >
@@ -43,27 +44,31 @@ export function ReleaseCard({
         (isSubscribed ? (
           <button
             onClick={() => onDelete(release.id)}
-            className="absolute top-2 right-2 text-blue-700 hover:text-red-500 font-semibold"
+            className="absolute top-2 right-2 text-zinc-600 hover:text-red-500 font-semibold"
             aria-label="Unsubscribe from release"
           >
-            Unsubscribe
+            <RiChatFollowUpLine className="inline-block size-10" />
           </button>
         ) : (
           <button
             onClick={() => onSubscribe(release.id)}
-            className="absolute top-2 right-2 text-blue-700 hover:text-red-500 font-semibold"
+            className="absolute top-2 right-2 text-zinc-400 hover:text-red-500 font-semibold"
             aria-label="Subscribe to release"
           >
-            Subscribe
+            <RiChatFollowUpFill className="inline-block size-10" />
           </button>
         ))}
       {/* Release name */}
-      <h2 className="text-xl font-semibold text-gray-800">{release.name}</h2>
+      <h2 className="text-s font-semibold text-zinc-100">
+        {release.name.length > 50
+        ? release.name.slice(0, 47) + "..."
+        : release.name}
+      </h2>
 
       {/* Release link*/}
-      <p className="text-sm text-gray-600">
+      <p className="text-xs mb-0.5">
         {" "}
-        <a href={release.link} className="text-blue-600 hover:underline">
+        <a href={release.link} className="text-zinc-400 hover:underline">
           {release.link.length > 40
             ? release.link.slice(0, 35) + "..."
             : release.link}
@@ -72,7 +77,7 @@ export function ReleaseCard({
 
       {/* Status badge */}
       <span
-        className={`max-w-fit inline-block px-2 py-1 text-xs font-medium rounded-full ${badgeClass}`}
+        className={`max-w-fit inline-block px-2 py-0.5 mt-0.5 text-xs font-medium rounded-full ${badgeClass}`}
       >
         {release.status}
       </span>

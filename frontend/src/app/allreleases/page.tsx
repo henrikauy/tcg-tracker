@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ReleaseList } from "@/components/ReleaseList";
+import { Release } from "@/components/ReleaseCard";
 
 export default function AllReleasesPage() {
   const { data: session } = useSession();
