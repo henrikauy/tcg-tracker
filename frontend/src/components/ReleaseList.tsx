@@ -1,18 +1,20 @@
 import { ReleaseCard, Release } from "@/components/ReleaseCard";
 
+type ReleaseListProps = {
+  releases: Release[];
+  subscriptions: number[];
+  onUnsubscribe: (id: number) => void;
+  onSubscribe: (id: number) => void;
+};
+
 export function ReleaseList({
   releases,
   subscriptions,
-  onDelete,
+  onUnsubscribe,
   onSubscribe,
-}: {
-  releases: Release[];
-  subscriptions: number[];
-  onDelete: (id: number) => void;
-  onSubscribe: (id: number) => void;
-}) {
+}: ReleaseListProps) {
   return (
-    <section className="max-w-4xl mx-auto border">
+    <section className="max-w-7xl mx-auto">
       {releases.length === 0 && (
         <p className="text-zinc-400 text-center">No releases to display.</p>
       )}
@@ -28,7 +30,7 @@ export function ReleaseList({
             key={release.id}
             release={release}
             isSubscribed={subscriptions.includes(release.id)}
-            onDelete={onDelete}
+            onUnsubscribe={onUnsubscribe}
             onSubscribe={onSubscribe}
           />
         ))}

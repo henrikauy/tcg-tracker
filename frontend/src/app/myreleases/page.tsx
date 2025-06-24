@@ -68,7 +68,7 @@ export default function MyReleasesPage() {
             key={release.id}
             release={release}
             isSubscribed={true}
-            onDelete={handleDelete}
+            onUnsubscribe={handleDelete}
             onSubscribe={() => {}}
           />
         ))}

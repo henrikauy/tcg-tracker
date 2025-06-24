@@ -37,7 +37,7 @@ export default function AllReleasesPage() {
       });
   }, []);
 
-  const handleDelete = (id: number) => {
+  const handleUnsubscribe = (id: number) => {
     if (!session?.accessToken) return;
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions/${id}`, {
       method: "DELETE",
@@ -106,7 +106,7 @@ export default function AllReleasesPage() {
       <ReleaseList
         releases={releases}
         subscriptions={subscriptions}
-        onDelete={handleDelete}
+        onUnsubscribe={handleUnsubscribe}
         onSubscribe={handleSubscribe}
       />
     </main>
