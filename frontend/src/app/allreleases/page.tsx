@@ -1,14 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ReleaseList } from "@/components/ReleaseList";
-import { Release } from "@/components/ReleaseCard";
+import { ReleaseList } from "@/components/releases/ReleaseList";
+import { Release } from "@/components/releases/ReleaseCard";
 
+// Page to display all releases and manage subscriptions
 export default function AllReleasesPage() {
   const { data: session } = useSession();
   const [releases, setReleases] = useState<Release[]>([]);
   const [subscriptions, setSubscriptions] = useState<number[]>([]);
 
+  // Fetch user subscriptions on session change
   useEffect(() => {
     if (!session?.accessToken) return;
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
@@ -22,6 +24,7 @@ export default function AllReleasesPage() {
       });
   }, [session]);
 
+  // Fetch all releases on mount
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
       .then((response) => response.json())
@@ -39,6 +42,7 @@ export default function AllReleasesPage() {
       });
   }, []);
 
+  // Handle unsubscribe action
   const handleUnsubscribe = (id: number) => {
     if (!session?.accessToken) return;
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions/${id}`, {
@@ -57,6 +61,7 @@ export default function AllReleasesPage() {
       });
   };
 
+  // Handle subscribe action
   const handleSubscribe = (id: number) => {
     if (!session?.accessToken) return;
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
@@ -79,6 +84,7 @@ export default function AllReleasesPage() {
       });
   };
 
+  // Refresh releases from backend and reload page
   const handleRefresh = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
     fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
@@ -97,6 +103,7 @@ export default function AllReleasesPage() {
 
   return (
     <main className="min-h-screen bg-zinc-900 p-8">
+      {/* Page header and refresh button */}
       <header className="max-w-4xl mx-auto mb-8 text-center">
         <h1 className="text-3xl font-bold text-zinc-100">All Releases</h1>
         <button
@@ -106,6 +113,7 @@ export default function AllReleasesPage() {
           Refresh Releases
         </button>
       </header>
+      {/* List of releases */}
       <ReleaseList
         releases={releases}
         subscriptions={subscriptions}

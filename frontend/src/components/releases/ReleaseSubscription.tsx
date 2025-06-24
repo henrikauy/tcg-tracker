@@ -8,6 +8,8 @@ type ReleaseSubscriptionProps = {
   session: any;
 };
 
+// Button component for subscribing or unsubscribing from a release
+// Displays a filled icon if subscribed, and an outlined icon if not
 export function ReleaseSubscription({
   isSubscribed,
   onUnsubscribe,

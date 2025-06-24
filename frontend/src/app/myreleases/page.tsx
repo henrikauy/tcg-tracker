@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ReleaseCard, Release } from "@/components/ReleaseCard";
+import { ReleaseCard, Release } from "@/components/releases/ReleaseCard";
 import { InputCard, NewRelease } from "@/components/InputCard";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

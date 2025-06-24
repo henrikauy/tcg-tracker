@@ -4,6 +4,7 @@ type ReleaseMetaProps = {
   status: string;
 };
 
+// Component to display metadata for a release, including price, source, and status
 export function ReleaseMeta({ price, source, status }: ReleaseMetaProps) {
   const badgeClass =
     status === "In Stock"

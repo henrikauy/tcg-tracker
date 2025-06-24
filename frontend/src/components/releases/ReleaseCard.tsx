@@ -21,6 +21,7 @@ type ReleaseCardProps = {
   onSubscribe: (id: number) => void;
 };
 
+// Component to display a card for a release
 export function ReleaseCard({
   release,
   onUnsubscribe,

@@ -1,4 +1,4 @@
-import { ReleaseCard, Release } from "@/components/ReleaseCard";
+import { ReleaseCard, Release } from "@/components/releases/ReleaseCard";
 
 type ReleaseListProps = {
   releases: Release[];
@@ -7,6 +7,7 @@ type ReleaseListProps = {
   onSubscribe: (id: number) => void;
 };
 
+// Component to display a list of releases
 export function ReleaseList({
   releases,
   subscriptions,
@@ -14,7 +15,7 @@ export function ReleaseList({
   onSubscribe,
 }: ReleaseListProps) {
   return (
-    <section className="max-w-7xl mx-auto border">
+    <section className="max-w-7xl mx-auto">
       {releases.length === 0 && (
         <p className="text-zinc-400 text-center">No releases to display.</p>
       )}

@@ -1,34 +1,35 @@
 "use client";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+import { FaUser, FaLock } from "react-icons/fa";
 
-export default function SignupForm() {
+// Login form component for user authentication
+export default function LoginForm() {
+  // State for form fields and error message
   const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, mobile, password }),
+    // Attempt to sign in with credentials
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
     });
 
-    if (res.ok) {
-      setSuccess("Signup successful! You can now log in.");
-      setTimeout(() => router.push("/login"), 1500);
+    // Redirect or show error based on result
+    if (res?.ok) {
+      router.push("/myreleases");
     } else {
-      const data = await res.json();
-      setError(data.detail || "Signup failed");
+      setError("Invalid email or password");
     }
   };
 
@@ -37,19 +38,20 @@ export default function SignupForm() {
       onSubmit={handleSubmit}
       className="max-w-sm w-full mx-auto p-8 rounded-lg shadow-lg bg-zinc-800 text-zinc-100 border border-zinc-700"
     >
+      {/* Form title */}
       <h2 className="text-3xl font-semibold mb-8 text-center text-zinc-100">
-        Sign up
+        Sign in
       </h2>
       {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
-      {success && <div className="mb-4 text-green-500 text-center">{success}</div>}
 
+      {/* Email input */}
       <div className="mb-6">
         <label className="block mb-2 font-medium text-zinc-100" htmlFor="email">
           Email
         </label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-            <FaEnvelope />
+            <FaUser />
           </span>
           <input
             id="email"
@@ -63,9 +65,13 @@ export default function SignupForm() {
           />
         </div>
       </div>
+      {/* Password input */}
 
       <div className="mb-2">
-        <label className="block mb-2 font-medium text-zinc-100" htmlFor="password">
+        <label
+          className="block mb-2 font-medium text-zinc-100"
+          htmlFor="password"
+        >
           Password
         </label>
         <div className="relative">
@@ -80,21 +86,38 @@ export default function SignupForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="new-password"
+            autoComplete="current-password"
           />
         </div>
       </div>
 
+      {/* Forgot password link */}
+
+      <div className=" text-right">
+        <Link
+          href="/forgot-password"
+          className="text-sm text-zinc-400 hover:underline"
+        >
+          Forgot password?
+        </Link>
+      </div>
+
+      {/* Submit button */}
       <button
         type="submit"
         className="w-full py-2 mt-6 rounded border border-indigo-400 text-zinc-100 font-semibold hover:bg-indigo-400 hover:text-zinc-900 transition bg-transparent"
       >
-        SIGN UP
+        LOGIN
       </button>
+
+      {/* Link to signup page */}
       <div className="mt-6 text-center text-zinc-400">
-        Already have an account?{" "}
-        <Link href="/login" className="text-indigo-400 hover:underline font-semibold">
-          Sign in
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/signup"
+          className="text-indigo-400 hover:underline font-semibold"
+        >
+          Sign up
         </Link>
       </div>
     </form>
