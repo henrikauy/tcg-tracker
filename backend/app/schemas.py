@@ -15,6 +15,7 @@ class ReleaseUpdate(BaseModel):
     source: str
     status: str
     image: str
+    price: float
 
 class ReleaseRead(BaseModel):
     id: int
@@ -23,6 +24,7 @@ class ReleaseRead(BaseModel):
     source: str
     status: str
     image: str
+    price: float
 
 class SubscriptionRequest(BaseModel):
     release_id: int

@@ -19,18 +19,18 @@ export function ReleaseSubscription({
   return isSubscribed ? (
     <button
       onClick={() => onUnsubscribe(releaseId)}
-      className="absolute top-2 right-2 text-zinc-600 hover:text-red-500 font-semibold"
+      className="absolute top-2 right-2 text-green-500 hover:size-11 font-semibold"
       aria-label="Unsubscribe from release"
     >
-      <RiChatFollowUpLine className="inline-block size-10" />
+      <RiChatFollowUpFill className="inline-block size-10" />
     </button>
   ) : (
     <button
       onClick={() => onSubscribe(releaseId)}
-      className="absolute top-2 right-2 text-zinc-400 hover:text-red-500 font-semibold"
+      className="absolute top-2 right-2 text-zinc-400 hover:size-11 font-semibold"
       aria-label="Subscribe to release"
     >
-      <RiChatFollowUpFill className="inline-block size-10" />
+      <RiChatFollowUpLine className="inline-block size-10" />
     </button>
   );
 }

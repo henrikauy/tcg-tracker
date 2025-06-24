@@ -31,6 +31,7 @@ from backend.app.schemas import (
     SubscriptionRequest,
     SearchItem,
 )
+from backend.app.crud.release import remove_missing_releases
 
 app = FastAPI()
 
@@ -191,11 +192,18 @@ def get_products(source: str, available: bool | None = Query(None)):
         raise HTTPException(status_code=404, detail="Source not found")
     all_items = fetch_function()
 
+    # Collect all scraped URLs
+    scraped_urls = set(item.url for item in all_items)
+
+    # Remove missing releases for this source
+    remove_missing_releases(source, scraped_urls)
+
+    # Upsert current releases
     for item in all_items:
         info = {
             "name": item.name,
             "url": item.url,
-            "source": "Bigw",
+            "source": source.capitalize(),
             "status": "In Stock" if item.in_stock else "Out of Stock",
             "last_checked": datetime.now(),
             "image": item.image_url,

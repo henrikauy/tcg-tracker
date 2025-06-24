@@ -14,6 +14,8 @@ export function ReleaseInfo({ name, link }: ReleaseInfoProps) {
           href={link}
           className="text-zinc-400 hover:underline truncate sm:truncate md:whitespace-normal block"
           title={link}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {link}
         </a>

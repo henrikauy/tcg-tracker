@@ -56,6 +56,7 @@ payload = {
     },
 }
 
+
 def fetch_bigw():
     """Fetch products from Big W API and return a list of SearchItem objects."""
     try:
@@ -73,7 +74,8 @@ def fetch_bigw():
                     in_stock = bool(item["stock"])
                     price = item["prices"]["WA"]["price"]["cents"]
                     image_url = (
-                        "https://www.bigw.com.au" + item["information"]["media"]["images"][0]["thumbnail"]["url"]
+                        "https://www.bigw.com.au"
+                        + item["information"]["media"]["images"][0]["thumbnail"]["url"]
                     )
                     product_url = f"https://www.bigw.com.au/product/{product_name.replace(' ', '-').lower()}/p/{product_id}"  # Add product URL
 
@@ -102,4 +104,3 @@ def fetch_bigw():
     except Exception as e:
         # Handle any other exceptions
         print(f"An error occurred: {e}")
-

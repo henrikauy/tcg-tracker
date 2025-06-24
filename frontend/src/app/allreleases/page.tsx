@@ -31,9 +31,9 @@ export default function AllReleasesPage() {
           name: release.name,
           link: release.url,
           status: release.status,
-          image: release.image || "",
-          price: release.price || "",
-          source: release.source || "",
+          image: release.image,
+          price: release.price,
+          source: release.source,
         }));
         setReleases(mappedReleases);
       });
@@ -91,6 +91,7 @@ export default function AllReleasesPage() {
           status: release.status,
         }));
         setReleases(mappedReleases);
+        window.location.reload();
       });
   };
 

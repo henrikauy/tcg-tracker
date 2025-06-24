@@ -16,7 +16,7 @@ export function ReleaseList({
   return (
     <section className="max-w-7xl mx-auto">
       {releases.length === 0 && (
-        <p className="text-zinc-400 text-center">No releases to display.</p>
+        <p className="text-zinc-400 text-center">Loading...</p>
       )}
       {releases
         .slice()

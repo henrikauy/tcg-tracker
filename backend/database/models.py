@@ -19,6 +19,7 @@ class Release(SQLModel, table=True):
   status: str
   last_checked: datetime = Field(default_factory=datetime.now)
   image: Optional[str] = None
+  price: Optional[float] = None
 
   subscriptions: List["Subscription"] = Relationship(back_populates="release")
 

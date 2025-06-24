@@ -29,6 +29,7 @@ def upsert_release(info: dict) -> Release:
             existing.status = info["status"] = info.get("status", existing.status)
             existing.last_checked = info["last_checked"] = info.get("last_checked", datetime.now)
             existing.image = info["image"] = info.get("image", existing.image)
+            existing.price = info["price"] = info.get("price", existing.price)
 
             session.add(existing)
             session.commit()
@@ -41,7 +42,8 @@ def upsert_release(info: dict) -> Release:
                 source=info["source"],
                 status=info["status"],
                 last_checked=info.get("last_checked", datetime.now()),
-                image=info["image"] if "image" in info else None
+                image=info["image"] if "image" in info else None,
+                price=info["price"] if "price" in info else None
             )
             session.add(release)
             session.commit()
@@ -81,3 +83,13 @@ def delete_release_by_id(id: int) -> None:
         
         session.delete(release)
         session.commit()
+
+def remove_missing_releases(source: str, scraped_urls: set[str]):
+    """
+    Remove releases from the DB for a given source that are not in scraped_urls.
+    """
+    db_releases = get_all_releases()
+    for r in db_releases:
+        if r.source.lower() == source.lower() and r.url not in scraped_urls:
+            delete_release_by_id(r.id)
+    
