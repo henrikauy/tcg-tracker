@@ -14,9 +14,9 @@ export function ReleaseList({
   onSubscribe,
 }: ReleaseListProps) {
   return (
-    <section className="max-w-7xl mx-auto">
+    <section className="max-w-7xl mx-auto border">
       {releases.length === 0 && (
-        <p className="text-zinc-400 text-center">Loading...</p>
+        <p className="text-zinc-400 text-center">No releases to display.</p>
       )}
       {releases
         .slice()
