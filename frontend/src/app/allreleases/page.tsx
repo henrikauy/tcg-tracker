@@ -32,6 +32,8 @@ export default function AllReleasesPage() {
           link: release.url,
           status: release.status,
           image: release.image || "",
+          price: release.price || "",
+          source: release.source || "",
         }));
         setReleases(mappedReleases);
       });

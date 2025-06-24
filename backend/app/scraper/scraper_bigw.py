@@ -73,7 +73,7 @@ def fetch_bigw():
                     in_stock = bool(item["stock"])
                     price = item["prices"]["WA"]["price"]["cents"]
                     image_url = (
-                        "https:" + item["information"]["media"]["images"][0]["thumbnail"]["url"]
+                        "https://www.bigw.com.au" + item["information"]["media"]["images"][0]["thumbnail"]["url"]
                     )
                     product_url = f"https://www.bigw.com.au/product/{product_name.replace(' ', '-').lower()}/p/{product_id}"  # Add product URL
 

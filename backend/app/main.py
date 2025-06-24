@@ -195,10 +195,11 @@ def get_products(source: str, available: bool | None = Query(None)):
         info = {
             "name": item.name,
             "url": item.url,
-            "source": item.source if hasattr(item, "source") else "bigw",
+            "source": "Bigw",
             "status": "In Stock" if item.in_stock else "Out of Stock",
             "last_checked": datetime.now(),
             "image": item.image_url,
+            "price": item.price if hasattr(item, "price") else None
         }
         upsert_release(info)
     return all_items
