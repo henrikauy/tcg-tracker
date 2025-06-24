@@ -33,7 +33,7 @@ export function ReleaseCard({
   return (
     <div
       className={
-        `bg-zinc-800 border-zinc-600 border-1 p-1 flex flex-col shadow transition-shadow hover:bg-zinc-700` +
+        `w-full max-w-full bg-zinc-800 border-zinc-600 border-1 p-1 flex flex-col shadow transition-shadow hover:bg-zinc-700` +
         (isSubscribed ? " bg-blue-50" : " bg-white")
       }
     >

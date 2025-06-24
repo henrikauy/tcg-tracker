@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ReleaseList } from "@/components/releases/ReleaseList";
 import { Release } from "@/components/releases/ReleaseCard";
+import { handleSubscribe, handleUnsubscribe } from "@/handlers/subscriptionHandlers";
 
 // Page to display all releases and manage subscriptions
 export default function AllReleasesPage() {
@@ -42,48 +43,6 @@ export default function AllReleasesPage() {
       });
   }, []);
 
-  // Handle unsubscribe action
-  const handleUnsubscribe = (id: number) => {
-    if (!session?.accessToken) return;
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-      body: JSON.stringify({ release_id: id }),
-    })
-      .then(() => {
-        setSubscriptions((prev) => prev.filter((rid) => rid !== id));
-      })
-      .catch((err) => {
-        alert("Failed to unsubscribe." + err.message);
-      });
-  };
-
-  // Handle subscribe action
-  const handleSubscribe = (id: number) => {
-    if (!session?.accessToken) return;
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-      body: JSON.stringify({ release_id: id }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          setSubscriptions((prev) => [...prev, id]);
-        } else {
-          alert("Failed to subscribe.");
-        }
-      })
-      .catch((err) => {
-        alert("Error subscribing: " + err.message);
-      });
-  };
-
   // Refresh releases from backend and reload page
   const handleRefresh = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
@@ -115,10 +74,21 @@ export default function AllReleasesPage() {
       </header>
       {/* List of releases */}
       <ReleaseList
-        releases={releases}
+        releases={releases
+          .map((release) => ({
+            ...release,
+            isSubscribed: subscriptions.includes(release.id),
+          }))
+          .sort((a, b) => {
+            // Subscribed first
+            if (a.isSubscribed && !b.isSubscribed) return -1;
+            if (!a.isSubscribed && b.isSubscribed) return 1;
+            return 0;
+          })
+        }
         subscriptions={subscriptions}
-        onUnsubscribe={handleUnsubscribe}
-        onSubscribe={handleSubscribe}
+        onSubscribe={(id) => handleSubscribe(id, session, setSubscriptions)}
+        onUnsubscribe={(id) => handleUnsubscribe(id, session, setSubscriptions)}
       />
     </main>
   );

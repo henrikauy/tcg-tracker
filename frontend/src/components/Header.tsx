@@ -9,7 +9,6 @@ export default function Header() {
 
   return (
     <header className="w-full flex items-center justify-between px-6 py-4 shadow-md border-b border-indigo-400 bg-zinc-800">
-      {/* Left: Title and navigation */}
       <div className="flex items-center gap-8">
         <h1 className="text-2xl tracking-tight text-zinc-100">
           PokeCard Tracker
@@ -23,7 +22,6 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-      {/* Right: Auth button */}
       <div>
         {session ? (
           <button
