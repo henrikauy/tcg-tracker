@@ -4,12 +4,15 @@ import { useSession } from "next-auth/react";
 import { ReleaseList } from "@/components/releases/ReleaseList";
 import { Release } from "@/components/releases/ReleaseCard";
 import { handleSubscribe, handleUnsubscribe } from "@/handlers/subscriptionHandlers";
+import { SortByStock } from "@/components/releases/sorting/SortByStock";
+
 
 // Page to display all releases and manage subscriptions
 export default function AllReleasesPage() {
   const { data: session } = useSession();
   const [releases, setReleases] = useState<Release[]>([]);
   const [subscriptions, setSubscriptions] = useState<number[]>([]);
+  const [sortByStock, setSortByStock] = useState<"none" | "in" | "out">("none");
 
   // Fetch user subscriptions on session change
   useEffect(() => {
@@ -60,6 +63,18 @@ export default function AllReleasesPage() {
       });
   };
 
+  let sortedReleases = releases.map(release => ({
+    ...release,
+    isSubscribed: subscriptions.includes(release.id),
+    inStock: release.status?.toLowerCase().includes("in stock"),
+  }));
+
+  if (sortByStock === "in") {
+    sortedReleases = sortedReleases.sort((a, b) => (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0));
+  } else if (sortByStock === "out") {
+    sortedReleases = sortedReleases.sort((a, b) => (a.inStock ? 1 : 0) - (b.inStock ? 1 : 0));
+  }
+
   return (
     <main className="min-h-screen bg-zinc-900 p-8">
       {/* Page header and refresh button */}
@@ -72,19 +87,17 @@ export default function AllReleasesPage() {
           Refresh Releases
         </button>
       </header>
+      <SortByStock sortByStock={sortByStock} setSortByStock={setSortByStock} />
       {/* List of releases */}
       <ReleaseList
-        releases={releases
-          .map((release) => ({
-            ...release,
-            isSubscribed: subscriptions.includes(release.id),
-          }))
-          .sort((a, b) => {
-            // Subscribed first
-            if (a.isSubscribed && !b.isSubscribed) return -1;
-            if (!a.isSubscribed && b.isSubscribed) return 1;
-            return 0;
-          })
+        releases={
+          sortedReleases
+            .sort((a, b) => {
+              // Subscribed first
+              if (a.isSubscribed && !b.isSubscribed) return -1;
+              if (!a.isSubscribed && b.isSubscribed) return 1;
+              return 0;
+            })
         }
         subscriptions={subscriptions}
         onSubscribe={(id) => handleSubscribe(id, session, setSubscriptions)}
