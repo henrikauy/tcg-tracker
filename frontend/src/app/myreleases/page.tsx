@@ -25,15 +25,19 @@ export default function MyReleasesPage() {
 
   // Fetch user's subscriptions from backend when session changes
   useEffect(() => {
-    if (!session?.accessToken) return;
+    const fetchSubscriptions = async () => {
+      if (!session?.accessToken) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          }
+        );
+        const data = await response.json();
         // Map backend data to Release objects
         const mappedReleases = data.map((release: any) => ({
           id: release.id,
@@ -47,8 +51,11 @@ export default function MyReleasesPage() {
         setReleases(mappedReleases);
         // Store IDs of subscribed releases
         setSubscriptions(data.map((release: any) => release.id));
-      })
-      .catch(() => setReleases([]));
+      } catch (error) {
+        setReleases([]);
+      }
+    };
+    fetchSubscriptions();
   }, [session]);
 
   // Show message if user is not authenticated

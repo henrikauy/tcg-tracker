@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ReleaseList } from "@/components/releases/ReleaseList";
 import { Release } from "@/components/releases/ReleaseCard";
-import { handleSubscribe, handleUnsubscribe } from "@/handlers/subscriptionHandlers";
+import {
+  handleSubscribe,
+  handleUnsubscribe,
+} from "@/handlers/subscriptionHandlers";
 import { SortByStock } from "@/components/releases/sorting/SortByStock";
-
 
 // Page to display all releases and manage subscriptions
 export default function AllReleasesPage() {
@@ -16,23 +18,34 @@ export default function AllReleasesPage() {
 
   // Fetch user subscriptions on session change
   useEffect(() => {
-    if (!session?.accessToken) return;
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`, {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchSubscriptions = async () => {
+      if (!session?.accessToken) return; // Ensure user is logged in
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_FASTAPI_URL}/me/subscriptions`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+          }
+        );
+        const data = await response.json();
         setSubscriptions(data.map((release: any) => release.id));
-      });
+      } catch (error) {
+        setSubscriptions([]);
+      }
+    };
+    fetchSubscriptions();
   }, [session]);
 
-  // Fetch all releases on mount
+  // Fetch all releases
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchReleases = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`
+        );
+        const data = await response.json();
         const mappedReleases = data.map((release: any) => ({
           id: release.id,
           name: release.name,
@@ -43,36 +56,49 @@ export default function AllReleasesPage() {
           source: release.source,
         }));
         setReleases(mappedReleases);
-      });
+      } catch (error) {
+        setReleases([]);
+      }
+    };
+    fetchReleases();
   }, []);
 
   // Refresh releases from backend and reload page
   const handleRefresh = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
-    fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`)
-      .then((response) => response.json())
-      .then((data) => {
-        const mappedReleases = data.map((release: any) => ({
-          id: release.id,
-          name: release.name,
-          link: release.url,
-          status: release.status,
-        }));
-        setReleases(mappedReleases);
-        window.location.reload();
-      });
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/fetch/bigw`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_FASTAPI_URL}/releases`
+      );
+      const data = await response.json();
+      const mappedReleases = data.map((release: any) => ({
+        id: release.id,
+        name: release.name,
+        link: release.url,
+        status: release.status,
+      }));
+      setReleases(mappedReleases);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to refresh releases:", error);
+      alert("Failed to refresh releases. Please try again later.");
+    }
   };
 
-  let sortedReleases = releases.map(release => ({
+  // Sort releases by stock status
+  let sortedReleases = releases.map((release) => ({
     ...release,
     isSubscribed: subscriptions.includes(release.id),
     inStock: release.status?.toLowerCase().includes("in stock"),
   }));
-
   if (sortByStock === "in") {
-    sortedReleases = sortedReleases.sort((a, b) => (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0));
+    sortedReleases = sortedReleases.sort(
+      (a, b) => (b.inStock ? 1 : 0) - (a.inStock ? 1 : 0)
+    );
   } else if (sortByStock === "out") {
-    sortedReleases = sortedReleases.sort((a, b) => (a.inStock ? 1 : 0) - (b.inStock ? 1 : 0));
+    sortedReleases = sortedReleases.sort(
+      (a, b) => (a.inStock ? 1 : 0) - (b.inStock ? 1 : 0)
+    );
   }
 
   return (
@@ -90,15 +116,12 @@ export default function AllReleasesPage() {
       <SortByStock sortByStock={sortByStock} setSortByStock={setSortByStock} />
       {/* List of releases */}
       <ReleaseList
-        releases={
-          sortedReleases
-            .sort((a, b) => {
-              // Subscribed first
-              if (a.isSubscribed && !b.isSubscribed) return -1;
-              if (!a.isSubscribed && b.isSubscribed) return 1;
-              return 0;
-            })
-        }
+        releases={sortedReleases.sort((a, b) => {
+          // Subscribed first
+          if (a.isSubscribed && !b.isSubscribed) return -1;
+          if (!a.isSubscribed && b.isSubscribed) return 1;
+          return 0;
+        })}
         subscriptions={subscriptions}
         onSubscribe={(id) => handleSubscribe(id, session, setSubscriptions)}
         onUnsubscribe={(id) => handleUnsubscribe(id, session, setSubscriptions)}
